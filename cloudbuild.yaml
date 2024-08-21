@@ -10,3 +10,7 @@ steps:
 # 替换 [YOUR-VM-NAME]、[YOUR-VM-ZONE] 和 [YOUR-USERNAME] 为您的实际 VM 名称、区域和用户名。
 
 timeout: '1200s'
+
+
+options:
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

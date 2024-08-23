@@ -1,31 +1,23 @@
 steps:
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "$$SSH_KEY"
   # 1. 解密 SSH 密钥并保存到 /root/.ssh/id_rsa
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        echo "$$SSH_KEY" > /root/.ssh/id_rsa
+        echo "$$SSH_KEY" | base64 -d > /root/.ssh/id_rsa
         chmod 400 /root/.ssh/id_rsa
-
     secretEnv: ['SSH_KEY']
 
   # 2. 使用 SSH 密钥连接到 VM 并执行命令
-  - name: 'gcr.io/cloud-builders/ssh'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-      - '-i'
-      - '/root/.ssh/id_rsa'
-      - '-o'
-      - 'StrictHostKeyChecking=no'
-      - '[USERNAME]@[VM_IP]'
-      - 'echo "This file was created in commit ${_COMMIT_SHA}" > /home/[USERNAME]/commit_${_COMMIT_SHA}.txt'
+      - '-c'
+      - |
+        ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no [USERNAME]@[VM_IP] 'echo "This file was created in commit ${_COMMIT_SHA}" > /home/[USERNAME]/commit_${_COMMIT_SHA}.txt'
 
-secrets:
-  - secretEnv:
-      SSH_KEY: ssh-key  # 你的 Secret 名称
+availableSecrets:
+  secretManager:
+    - versionName: projects/661994841475/secrets/ssh-key/versions/latest
+      env: 'SSH_KEY'

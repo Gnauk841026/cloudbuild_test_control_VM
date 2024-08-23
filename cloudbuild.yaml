@@ -5,7 +5,7 @@ steps:
       - '-c'
       - |
         mkdir -p /root/.ssh
-        echo "$$SSH_KEY" > /root/.ssh/id_rsa
+        echo "$SSH_KEY" > /root/.ssh/id_rsa  # 使用單個 $ 符號
         chmod 400 /root/.ssh/id_rsa
         ls -l /root/.ssh/id_rsa  # 檢查文件是否存在
 

@@ -15,7 +15,7 @@ steps:
     args:
       - '-c'
       - |
-        ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no [USERNAME]@[VM_IP] 'echo "This file was created in commit ${_COMMIT_SHA}" > /home/[USERNAME]/commit_${_COMMIT_SHA}.txt'
+        ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 'echo "This file was created in commit ${_COMMIT_SHA}" > /home/[USERNAME]/commit_${_COMMIT_SHA}.txt'
 
 availableSecrets:
   secretManager:

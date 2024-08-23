@@ -1,12 +1,13 @@
 steps:
-  # 1. 解密 SSH 密钥并保存到 /root/.ssh/id_rsa
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        echo "$$SSH_KEY" | base64 -d > /root/.ssh/id_rsa
+        mkdir -p /root/.ssh
+        echo "$$SSH_KEY" > /root/.ssh/id_rsa
         chmod 400 /root/.ssh/id_rsa
+
     secretEnv: ['SSH_KEY']
 
   # 2. 使用 SSH 密钥连接到 VM 并执行命令

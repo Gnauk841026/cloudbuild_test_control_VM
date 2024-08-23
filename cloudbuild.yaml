@@ -1,4 +1,10 @@
 steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "$$SSH_KEY"
   # 1. 解密 SSH 密钥并保存到 /root/.ssh/id_rsa
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -21,5 +27,5 @@ steps:
       - 'echo "This file was created in commit ${_COMMIT_SHA}" > /home/[USERNAME]/commit_${_COMMIT_SHA}.txt'
 
 secrets:
-- secretEnv:
-    SSH_KEY: ssh-key  # 你的 Secret 名称
+  - secretEnv:
+      SSH_KEY: ssh-key  # 你的 Secret 名称

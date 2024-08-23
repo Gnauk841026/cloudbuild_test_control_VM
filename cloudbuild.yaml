@@ -5,19 +5,18 @@ steps:
       - '-c'
       - |
         mkdir -p /root/.ssh
-        echo "$SSH_KEY" > /root/.ssh/id_rsa  # 使用單個 $ 符號
+        echo "$SSH_KEY" > /root/.ssh/id_rsa  # 使用環境變量
         chmod 400 /root/.ssh/id_rsa
         ls -l /root/.ssh/id_rsa  # 檢查文件是否存在
 
     secretEnv: ['SSH_KEY']
 
-  # 2. 使用 SSH 密钥连接到 VM 并执行命令
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 'echo "This file was created in commit ${_COMMIT_SHA}" > /home/[USERNAME]/commit_${_COMMIT_SHA}.txt'
+        ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -v lucifer_suriel@35.201.224.207 'echo "This file was created in commit ${_COMMIT_SHA}" > /home/[USERNAME]/commit_${_COMMIT_SHA}.txt'
 
 availableSecrets:
   secretManager:

@@ -16,12 +16,10 @@ steps:
         gcloud compute ssh lucifer_suriel@vm-test --zone=asia-east1-c \
           --command="echo 'This file was created in commit ${_COMMIT_SHA}' > /home/lucifer_suriel/commit_${_COMMIT_SHA}.txt"
 
-
 substitutions:
-  _COMMIT_SHA: '$COMMIT_SHA'
+  _COMMIT_SHA: '${COMMIT_SHA}'
 
 timeout: '1200s'
 
 options:
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
-

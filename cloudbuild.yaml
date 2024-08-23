@@ -8,6 +8,12 @@ steps:
     waitFor: ['build']
     approvalRequired: true
 
+substitutions:
+  _COMMIT_SHA: $COMMIT_SHA
+
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '.', '--tag=gcr.io/$PROJECT_ID/my-app:${_COMMIT_SHA}']
 
 
 

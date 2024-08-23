@@ -19,7 +19,7 @@ steps:
 
 availableSecrets:
   secretManager:
-    - versionName: projects/661994841475/secrets/ssh-key/versions/latest
+    - versionName: projects/terraform-429505/secrets/ssh-key/versions/latest
       env: 'SSH_KEY'
 
 options:

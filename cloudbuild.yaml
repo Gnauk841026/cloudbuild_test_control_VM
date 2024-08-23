@@ -4,6 +4,14 @@ steps:
     args:
       - '-c'
       - |
+        echo "All environment variables:"
+        printenv
+        
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
         echo "Commit SHA is: ${_COMMIT_SHA}"
         gcloud compute ssh lucifer_suriel@vm-test --zone=asia-east1-c \
           --command="echo 'This file was created in commit ${_COMMIT_SHA}' > /home/lucifer_suriel/commit_${_COMMIT_SHA}.txt"

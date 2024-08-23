@@ -1,37 +1,18 @@
 steps:
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '.', '--tag=gcr.io/$PROJECT_ID/my-app:$COMMIT_SHA']
-    id: 'build'
-    
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['app', 'deploy']
-    waitFor: ['build']
-    approvalRequired: true
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "SSH into GCP VM and create a file with COMMIT SHA"
+        gcloud compute ssh lucifer_suriel@vm-test --zone=asia-east1-c \
+          --command="echo 'This file was created in commit ${_COMMIT_SHA}' > /home/lucifer_suriel/commit_${_COMMIT_SHA}.txt"
 
 substitutions:
-  _COMMIT_SHA: $COMMIT_SHA
+  _COMMIT_SHA: '$COMMIT_SHA'
 
-steps:
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '.', '--tag=gcr.io/$PROJECT_ID/my-app:${_COMMIT_SHA}']
-
-
-
-
-# steps:
-# - name: 'gcr.io/cloud-builders/gcloud'
-#   entrypoint: 'bash'
-#   args:
-#     - '-c'
-#     - |
-#       echo "SSH into GCP VM and create a file"
-#       gcloud compute ssh lucifer_suriel@vm-test --zone=asia-east1-c --command="echo 'File created by Cloud Build' > /home/lucifer_suriel/cloudbuild_test.txt"
-
-      
-# # 替换 [YOUR-VM-NAME]、[YOUR-VM-ZONE] 和 [YOUR-USERNAME] 为您的实际 VM 名称、区域和用户名。
-
-# timeout: '1200s'
-
+timeout: '1200s'
 
 options:
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+

@@ -4,9 +4,10 @@ steps:
     args:
       - '-c'
       - |
-        echo "SSH into GCP VM and create a file with COMMIT SHA"
+        echo "Commit SHA is: ${_COMMIT_SHA}"
         gcloud compute ssh lucifer_suriel@vm-test --zone=asia-east1-c \
           --command="echo 'This file was created in commit ${_COMMIT_SHA}' > /home/lucifer_suriel/commit_${_COMMIT_SHA}.txt"
+
 
 substitutions:
   _COMMIT_SHA: '$COMMIT_SHA'

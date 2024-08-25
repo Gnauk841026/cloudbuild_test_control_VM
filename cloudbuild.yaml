@@ -29,7 +29,7 @@ steps:
         sudo apt-get install -y git
       fi
 
-      # 設置部署目錄
+      # 直接在腳本中定義部署目錄
       DEPLOY_DIR="/home/lucifer_suriel/app"
       
       # 如果目錄不存在，創建它

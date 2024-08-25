@@ -8,7 +8,7 @@ steps:
     set -x
     
     # 使用提供的 SHA 或默認到最新的 commit
-    TARGET_SHA=${_MANUAL_SHA:-$COMMIT_SHA}
+    TARGET_SHA=${_COMMIT_SHA:-$COMMIT_SHA}
     echo "Deploying commit: $TARGET_SHA"
     
     # 安裝 SSH 客戶端
@@ -48,7 +48,7 @@ steps:
     EOF
 
 substitutions:
-  _MANUAL_SHA: '' # 默認為空字符串
+  _COMMIT_SHA: ${COMMIT_SHA} # 使用內建的 COMMIT_SHA
 
 timeout: '1200s'
 options:

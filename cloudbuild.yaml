@@ -9,8 +9,8 @@ steps:
     
     echo "Deploying commit: $_COMMIT_SHA"
     
-    # 安裝 SSH 客戶端
-    apt-get update && apt-get install -y openssh-client
+    # 安裝 SSH 客戶端和 rsync
+    apt-get update && apt-get install -y openssh-client rsync
     
     # 準備 SSH
     mkdir -p /root/.ssh
@@ -21,14 +21,22 @@ steps:
     # 添加 SSH 密鑰到 known_hosts
     ssh-keyscan -H 35.201.224.207 >> /root/.ssh/known_hosts
     
-    # 使用 SSH 連接到虛擬機並執行部署腳本
+    # 使用 rsync 將當前目錄（倉庫內容）複製到虛擬機
+    rsync -avz -e "ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+      --exclude='.git' \
+      . lucifer_suriel@35.201.224.207:/home/lucifer_suriel/app
+    
+    # SSH 到虛擬機執行部署後的命令
     ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 << EOF
-      touch test2.txt
-      git fetch origin
-      git checkout $_COMMIT_SHA
-      # 在這裡添加您的部署命令，例如：
-      # docker-compose up -d
-      echo "Deployed commit $_COMMIT_SHA"
+      set -e
+      
+      cd /home/lucifer_suriel/app
+      
+      # 在這裡添加任何需要在虛擬機上執行的命令
+      # 例如：重啟服務、更新配置等
+      
+      echo "Repository content deployed to /home/lucifer_suriel/app"
+      echo "Deployed commit: $_COMMIT_SHA"
     EOF
 
 substitutions:

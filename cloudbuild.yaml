@@ -4,18 +4,34 @@ steps:
   args:
   - '-c'
   - |
+    set -e  # 任何命令失敗就立即退出
+    set -x  # 打印執行的每個命令
+
     # 安裝 SSH 客戶端
     apt-get update && apt-get install -y openssh-client
 
+    # 確保 .ssh 目錄存在
+    mkdir -p /root/.ssh
+    chmod 700 /root/.ssh
+
     # 從 Secret Manager 獲取 SSH 私鑰
-    gcloud secrets versions access latest --secret=ssh-key > /root/.ssh/id_rsa
+    echo "Fetching SSH key from Secret Manager..."
+    gcloud secrets versions access latest --secret=ssh-key > /root/.ssh/id_rsa || (echo "Failed to fetch SSH key" && exit 1)
+
+    # 檢查私鑰文件是否存在和非空
+    if [ ! -s /root/.ssh/id_rsa ]; then
+      echo "SSH private key file is empty or does not exist"
+      exit 1
+    fi
 
     # 設置正確的權限
     chmod 600 /root/.ssh/id_rsa
 
     # 添加 SSH 密鑰到 known_hosts
-    mkdir -p /root/.ssh
     ssh-keyscan -H 35.201.224.207 >> /root/.ssh/known_hosts
+
+    # 測試 SSH 連接（不執行任何命令）
+    ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 lucifer_suriel@35.201.224.207 echo "SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
     # 使用 SSH 連接到虛擬機並創建文件
     ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 "touch /home/lucifer_suriel/test_file.txt"

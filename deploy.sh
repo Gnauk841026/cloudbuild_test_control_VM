@@ -17,5 +17,3 @@ pm2 start app.js --name "cloud-run-demo"
 # 保存 PM2 進程列表，以便在系統重啟時自動啟動
 pm2 save
 
-# 設置 PM2 在系統啟動時自動運行
-pm2 startup

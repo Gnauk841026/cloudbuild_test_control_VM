@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
       </style>
     </head>
     <body>
-      Hello from Cloud Run!XXXXXXXXXXXXXXXXX
+      Hello from Cloud Run!
     </body>
     </html>
   `);

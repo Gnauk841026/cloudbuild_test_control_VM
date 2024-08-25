@@ -27,6 +27,12 @@ steps:
       set -e
       set -x
 
+      # 檢查並安裝 Git
+      if ! command -v git &> /dev/null; then
+        echo "Git not found. Installing Git..."
+        sudo apt-get update
+        sudo apt-get install -y git
+      fi
       # 檢查目錄是否存在，如果不存在則克隆倉庫
       if [ ! -d "/home/lucifer_suriel/cloudbuild_test_control_VM" ]; then
         echo "Directory does not exist. Cloning repository..."

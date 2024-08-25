@@ -19,39 +19,59 @@ steps:
     chmod 600 /root/.ssh/id_rsa
     
     # 添加 SSH 密鑰到 known_hosts
+    ssh-keyscan -H github.com >> /root/.ssh/known_hosts
     ssh-keyscan -H 35.201.224.207 >> /root/.ssh/known_hosts
     
     # 使用 SSH 連接到虛擬機並執行部署腳本
     ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 << EOF
-      # 安裝 Git（如果尚未安裝）
-      if ! command -v git &> /dev/null; then
-        sudo apt-get update
-        sudo apt-get install -y git
-      fi
+      set -e
+      set -x
 
-      # 切換到用戶的主目錄
-      cd ~
-
-      # 如果倉庫已經存在，進入倉庫目錄；否則，克隆倉庫
-      if [ -d "cloudbuild_test_control_VM" ]; then
-        cd cloudbuild_test_control_VM
-        git fetch origin
-      else
-        git clone https://github.com/Gnauk841026/cloudbuild_test_control_VM.git
-        cd cloudbuild_test_control_VM
-      fi
+      cd ~/cloudbuild_test_control_VM
 
       # 檢出指定的 commit
       git checkout -f $_COMMIT_SHA
 
-      # 在這裡添加您的部署命令，例如：
-      # docker-compose up -d
+      # 安裝 Node.js 和 npm（如果尚未安裝）
+      if ! command -v node &> /dev/null; then
+        curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+      fi
+
+      # 安裝 PM2（如果尚未安裝）
+      if ! command -v pm2 &> /dev/null; then
+        sudo npm install -g pm2
+      fi
+
+      # 給予 deploy.sh 執行權限
+      chmod +x deploy.sh
+
+      # 執行 deploy.sh 腳本
+      ./deploy.sh
 
       echo "Deployed commit $_COMMIT_SHA"
+
+      # 驗證部署
+      if pm2 list | grep -q "cloud-run-demo"; then
+        echo "Application is running in PM2."
+      else
+        echo "Error: Application is not running in PM2!"
+        exit 1
+      fi
+
+      # 檢查應用是否響應
+      if curl -s http://localhost:8080 | grep -q "Hello from Cloud Run!"; then
+        echo "Application is responding correctly."
+      else
+        echo "Error: Application is not responding as expected!"
+        exit 1
+      fi
+
+      echo "Deployment and validation completed successfully."
     EOF
 
 substitutions:
-  _COMMIT_SHA: ${COMMIT_SHA} # 使用內建的 COMMIT_SHA，但允許覆蓋
+  _COMMIT_SHA: ${COMMIT_SHA}
 
 timeout: '1200s'
 options:

@@ -27,10 +27,32 @@ steps:
       set -e
       set -x
 
-      cd ~/cloudbuild_test_control_VM
+      # 檢查目錄是否存在，如果不存在則克隆倉庫
+      if [ ! -d "/home/lucifer_suriel/cloudbuild_test_control_VM" ]; then
+        echo "Directory does not exist. Cloning repository..."
+        git clone https://github.com/Gnauk841026/cloudbuild_test_control_VM.git /home/lucifer_suriel/cloudbuild_test_control_VM
+      fi
 
-      # 檢出指定的 commit
-      git checkout -f $_COMMIT_SHA
+      cd /home/lucifer_suriel/cloudbuild_test_control_VM
+
+      # 顯示當前的 Git 狀態
+      git status
+
+      # 獲取最新的更改
+      git fetch origin
+
+      # 顯示所有分支
+      git branch -a
+
+      # 嘗試檢出指定的 commit
+      if git checkout -f $_COMMIT_SHA; then
+        echo "Successfully checked out commit $_COMMIT_SHA"
+      else
+        echo "Failed to checkout commit $_COMMIT_SHA"
+        echo "Available commits:"
+        git log --oneline -n 10
+        exit 1
+      fi
 
       # 安裝 Node.js 和 npm（如果尚未安裝）
       if ! command -v node &> /dev/null; then

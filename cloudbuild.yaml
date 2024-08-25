@@ -29,21 +29,17 @@ steps:
         sudo apt-get install -y git
       fi
 
-      # 直接在腳本中定義部署目錄
-      DEPLOY_DIR="/home/lucifer_suriel/app"
-      
-      # 如果目錄不存在，創建它
-      mkdir -p \$DEPLOY_DIR
-      cd \$DEPLOY_DIR
+      # 切換到用戶的主目錄
+      cd ~
 
-      # 如果不是 Git 倉庫，初始化它
-      if [ ! -d .git ]; then
-        git init
-        git remote add origin https://github.com/Gnauk841026/cloudbuild_test_control_VM.git
+      # 如果倉庫已經存在，進入倉庫目錄；否則，克隆倉庫
+      if [ -d "cloudbuild_test_control_VM" ]; then
+        cd cloudbuild_test_control_VM
+        git fetch origin
+      else
+        git clone https://github.com/Gnauk841026/cloudbuild_test_control_VM.git
+        cd cloudbuild_test_control_VM
       fi
-
-      # 獲取最新的變更
-      git fetch origin
 
       # 檢出指定的 commit
       git checkout -f $_COMMIT_SHA

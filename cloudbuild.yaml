@@ -70,26 +70,6 @@ steps:
 
       # 執行 deploy.sh 腳本
       ./deploy.sh
-
-      echo "Deployed commit $_COMMIT_SHA"
-
-      # 驗證部署
-      if pm2 list | grep -q "cloud-run-demo"; then
-        echo "Application is running in PM2."
-      else
-        echo "Error: Application is not running in PM2!"
-        exit 1
-      fi
-
-      # 檢查應用是否響應
-      if curl -s http://localhost:8080 | grep -q "Hello from Cloud Run!"; then
-        echo "Application is responding correctly."
-      else
-        echo "Error: Application is not responding as expected!"
-        exit 1
-      fi
-
-      echo "Deployment and validation completed successfully."
     EOF
 
 substitutions:

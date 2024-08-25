@@ -6,23 +6,18 @@ steps:
   - |
     set -e
     set -x
-
     # 使用提供的 SHA 或默認到觸發器的 SHA
-    TARGET_SHA=${_MANUAL_SHA:-$COMMIT_SHA}
+    TARGET_SHA=${_MANUAL_SHA:-$_COMMIT_SHA}
     echo "Deploying commit: $TARGET_SHA"
-
     # 安裝 SSH 客戶端
     apt-get update && apt-get install -y openssh-client
-
     # 準備 SSH
     mkdir -p /root/.ssh
     chmod 700 /root/.ssh
     gcloud secrets versions access latest --secret=ssh-key > /root/.ssh/id_rsa
     chmod 600 /root/.ssh/id_rsa
-
     # 添加 SSH 密鑰到 known_hosts
     ssh-keyscan -H 35.201.224.207 >> /root/.ssh/known_hosts
-
     # 使用 SSH 連接到虛擬機並執行部署腳本
     ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 << EOF
       touch test1.txt
@@ -35,8 +30,8 @@ steps:
 
 substitutions:
   _MANUAL_SHA: '' # 默認為空字符串
+  _COMMIT_SHA: ${COMMIT_SHA} # 使用內建的 COMMIT_SHA
 
 timeout: '1200s'
-
 options:
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

@@ -23,7 +23,7 @@ steps:
     
     # 使用 SSH 連接到虛擬機並執行部署腳本
     ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 << EOF
-      touch test1.txt
+      touch test2.txt
       git fetch origin
       git checkout $_COMMIT_SHA
       # 在這裡添加您的部署命令，例如：

@@ -23,16 +23,40 @@ steps:
     
     # 使用 SSH 連接到虛擬機並執行部署腳本
     ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.224.207 << EOF
-      touch test1.txt
-      touch test2.txt
+      # 安裝 Git（如果尚未安裝）
+      if ! command -v git &> /dev/null; then
+        sudo apt-get update
+        sudo apt-get install -y git
+      fi
+
+      # 設置部署目錄
+      DEPLOY_DIR="/home/lucifer_suriel/app"
+      
+      # 如果目錄不存在，創建它
+      mkdir -p \$DEPLOY_DIR
+      cd \$DEPLOY_DIR
+
+      # 如果不是 Git 倉庫，初始化它
+      if [ ! -d .git ]; then
+        git init
+        git remote add origin https://github.com/Gnauk841026/cloudbuild_test_control_VM.git
+      fi
+
+      # 獲取最新的變更
       git fetch origin
-      git checkout $_COMMIT_SHA
+
+      # 檢出指定的 commit
+      git checkout -f $_COMMIT_SHA
+
       # 在這裡添加您的部署命令，例如：
       # docker-compose up -d
+
       echo "Deployed commit $_COMMIT_SHA"
     EOF
+
 substitutions:
-  _COMMIT_SHA: ${COMMIT_SHA} # 使用內建的 COMMIT_SHA
+  _COMMIT_SHA: ${COMMIT_SHA} # 使用內建的 COMMIT_SHA，但允許覆蓋
+
 timeout: '1200s'
 options:
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

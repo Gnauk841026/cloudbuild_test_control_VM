@@ -20,10 +20,10 @@ steps:
     
     # 添加 SSH 密鑰到 known_hosts
     ssh-keyscan -H github.com >> /root/.ssh/known_hosts
-    ssh-keyscan -H 35.201.240.229 >> /root/.ssh/known_hosts
+    ssh-keyscan -H 35.234.30.55 >> /root/.ssh/known_hosts
     
     # 使用 SSH 連接到虛擬機並執行部署腳本
-    ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.201.240.229 << EOF
+    ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no lucifer_suriel@35.234.30.55 << EOF
       set -e
       set -x
       # 檢查並安裝 Git
